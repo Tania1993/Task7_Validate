@@ -1,0 +1,72 @@
+import java.io.*;
+import java.util.EmptyStackException;
+import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Task7 {
+    public static void main(String[] args) throws IOException {
+        ValidateHTMLCode validateHTMLCode = new ValidateHTMLCode();
+        BufferedReader in = new BufferedReader(new FileReader("file1.html"));
+        String string = "";
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            while ((string = in.readLine()) != null) {
+                stringBuilder.append(string);
+                stringBuilder.append(" ");
+            }
+        }
+        finally {
+            in.close();
+        }
+        boolean b = validateHTMLCode.validate(stringBuilder.toString());
+        System.out.println(b);
+    }
+}
+
+class ValidateHTMLCode{
+    public boolean validate(String htmlCode) throws FileNotFoundException{
+        Stack<String> stack = new Stack<String>();
+        Pattern p1 = Pattern.compile("<(.*?)>");
+        Matcher m1 = p1.matcher(htmlCode);
+        String str = "";
+        String tags = "", tagsCurrent = "";
+
+        int countString = 0;
+        try {
+            while (m1.find()) {
+                str = m1.group();
+                tags = str.substring(str.indexOf('<') + 1, str.indexOf('>')).split(" ", 2)[0];
+                if (!tags.startsWith("/")) {
+                    stack.push(tags);
+                } else {
+                    if (!stack.isEmpty()) {
+                        tagsCurrent = stack.pop();
+                        if (!tagsCurrent.equals(tags.substring(tags.indexOf('/') + 1))) {
+                            countString++;
+                            System.out.println("Error: " + tagsCurrent + " at " + countString);
+                        }
+                    } else {
+                        countString++;
+                        System.out.println("Error: " + tagsCurrent + " at " + countString);
+                    }
+                }
+            }
+            while (!stack.isEmpty()) {
+                System.out.println("Error: missing closing tag " + tagsCurrent);
+                stack.pop();
+            }
+        }
+       catch (EmptyStackException exception) {
+            exception.printStackTrace();
+        }
+        if(countString == 0)
+            return true;
+        else
+            return false;
+    }
+}
+
+
+
+
