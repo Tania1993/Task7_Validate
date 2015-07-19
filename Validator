@@ -32,8 +32,6 @@ class ValidateHTMLCode{
         String str = "";
         String tags = "", tagsCurrent = "";
 
-        int countString = 0;
-        try {
             while (m1.find()) {
                 str = m1.group();
                 tags = str.substring(str.indexOf('<') + 1, str.indexOf('>')).split(" ", 2)[0];
@@ -43,27 +41,20 @@ class ValidateHTMLCode{
                     if (!stack.isEmpty()) {
                         tagsCurrent = stack.pop();
                         if (!tagsCurrent.equals(tags.substring(tags.indexOf('/') + 1))) {
-                            countString++;
-                            System.out.println("Error: " + tagsCurrent + " at " + countString);
+                            System.out.println("Error: " + tags + " at " + htmlCode.indexOf(str));
+                            return false;
                         }
                     } else {
-                        countString++;
-                        System.out.println("Error: " + tagsCurrent + " at " + countString);
+                        System.out.println("Error: " + tags + " at " + htmlCode.indexOf(str));
+                        return false;
                     }
                 }
             }
             while (!stack.isEmpty()) {
+                tagsCurrent = stack.pop();
                 System.out.println("Error: missing closing tag " + tagsCurrent);
-                stack.pop();
             }
-        }
-       catch (EmptyStackException exception) {
-            exception.printStackTrace();
-        }
-        if(countString == 0)
             return true;
-        else
-            return false;
     }
 }
 
